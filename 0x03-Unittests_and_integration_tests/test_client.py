@@ -5,12 +5,12 @@ import unittest
 from parameterized import parameterized, parameterized_class
 from unittest.mock import patch, PropertyMock, Mock
 from client import GithubOrgClient
-# from fixtures import (
-#     org_payload,
-#     repos_payload,
-#     expected_repos,
-#     apache2_repos
-# )
+from fixtures import (
+    org_payload,
+    repos_payload,
+    expected_repos,
+    apache2_repos
+)
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -76,38 +76,38 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(
             GithubOrgClient.has_license(repo, license_key), expected
         )
-    # @parameterized_class(
-    #     ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
-    #     [(org_payload, repos_payload, expected_repos, apache2_repos)],
-    # )
-# class TestIntegrationGithubOrgClient(unittest.TestCase):
-#     """Integration tests for GithubOrgClient.public_repos."""
+    @parameterized_class(
+        ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
+        [(org_payload, repos_payload, expected_repos, apache2_repos)])
+    
 
-#     @classmethod
-#     def setUpClass(cls):
-#         """Start patching client.get_json for integration tests."""
-#         cls.get_patcher = patch("client.get_json")
-#         cls.mock_get_json = cls.get_patcher.start()
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient.public_repos."""
 
-#         def get_json_side_effect(url):
-#             if url.endswith("/repos"):
-#                 return cls.repos_payload
-#             return cls.org_payload
+    @classmethod
+    def setUpClass(cls):
+        """Start patching client.get_json for integration tests."""
+        cls.get_patcher = patch("client.get_json")
+        cls.mock_get_json = cls.get_patcher.start()
 
-#         cls.mock_get_json.side_effect = get_json_side_effect
+        def get_json_side_effect(url):
+            if url.endswith("/repos"):
+                return cls.repos_payload
+            return cls.org_payload
 
-#     @classmethod
-#     def tearDownClass(cls):
-#         """Stop patching."""
-#         cls.get_patcher.stop()
+        cls.mock_get_json.side_effect = get_json_side_effect
 
-#     def test_public_repos(self):
-#         """Integration test for public_repos returns expected repo names."""
-#         client = GithubOrgClient("test")
-#         self.assertEqual(
-#             sorted(client.public_repos()),
-#             sorted(self.expected_repos)
-#         )
+    @classmethod
+    def tearDownClass(cls):
+        """Stop patching."""
+        cls.get_patcher.stop()
+    # def test_public_repos(self):
+    #     """Integration test for public_repos returns expected repo names."""
+    #     client = GithubOrgClient("test")
+    #     self.assertEqual(
+    #         sorted(client.public_repos()),
+    #         sorted(self.expected_repos)
+    #     )
 
 #     def test_public_repos_with_license(self):
 #         """Integration test for filtering by license."""
