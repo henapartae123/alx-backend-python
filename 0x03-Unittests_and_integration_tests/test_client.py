@@ -42,31 +42,31 @@ class TestGithubOrgClient(unittest.TestCase):
                 "https://api.github.com/orgs/test/repos"
             )
 
-#     @patch("client.get_json")
-#     def test_public_repos(self, mock_get_json):
-#         """Test that public_repos returns repo names and calls get_json."""
-#         repos_payload = [
-#             {"name": "repo1", "license": {"key": "mit"}},
-#             {"name": "repo2", "license": {"key": "apache-2.0"}},
-#             {"name": "repo3", "license": None},
-#         ]
-#         mock_get_json.return_value = repos_payload
+    @patch("client.get_json")
+    def test_public_repos(self, mock_get_json):
+        """Test that public_repos returns repo names and calls get_json."""
+        repos_payload = [
+            {"name": "repo1", "license": {"key": "mit"}},
+            {"name": "repo2", "license": {"key": "apache-2.0"}},
+            {"name": "repo3", "license": None},
+        ]
+        mock_get_json.return_value = repos_payload
 
-#         client = GithubOrgClient("test")
-#         with patch.object(
-#             GithubOrgClient, "_public_repos_url", new_callable=PropertyMock
-#         ) as mock_url:
-#             mock_url.return_value = "https://api.github.com/orgs/test/repos"
-#             result = client.public_repos()
+        client = GithubOrgClient("test")
+        with patch.object(
+            GithubOrgClient, "_public_repos_url", new_callable=PropertyMock
+        ) as mock_url:
+            mock_url.return_value = "https://api.github.com/orgs/test/repos"
+            result = client.public_repos()
 
-#             self.assertEqual(sorted(result), ["repo1", "repo2", "repo3"])
-#             mock_url.assert_called_once()
-#             mock_get_json.assert_called_once_with(mock_url.return_value)
+            self.assertEqual(sorted(result), ["repo1", "repo2", "repo3"])
+            mock_url.assert_called_once()
+            mock_get_json.assert_called_once_with(mock_url.return_value)
 
-#     @parameterized.expand([
-#         ({"license": {"key": "my_license"}}, "my_license", True),
-#         ({"license": {"key": "other_license"}}, "my_license", False),
-#     ])
+    # @parameterized.expand([
+    #     ({"license": {"key": "my_license"}}, "my_license", True),
+    #     ({"license": {"key": "other_license"}}, "my_license", False),
+    # ])
 #     def test_has_license(self, repo, license_key, expected):
 #         """Test that has_license returns True/False depending on license key."""
 #         self.assertEqual(
