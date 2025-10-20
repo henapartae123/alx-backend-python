@@ -67,56 +67,6 @@ class TestGithubOrgClient(unittest.TestCase):
             self.assertEqual(sorted(result), expected)
             mock_url.assert_called_once()
             mock_get_json.assert_called_once_with(mock_url.return_value)
-    # @parameterized.expand([
-    #     ({"license": {"key": "my_license"}}, "my_license", True),
-    #     ({"license": {"key": "other_license"}}, "my_license", False),
-    # ])
-#     def test_has_license(self, repo, license_key, expected):
-#         """Test that has_license returns True/False depending on license key."""
-#         self.assertEqual(
-#             GithubOrgClient.has_license(repo, license_key), expected
-#         )
-
-# @parameterized_class(
-#     ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
-#     [(org_payload, repos_payload, expected_repos, apache2_repos)],
-# )
-# class TestIntegrationGithubOrgClient(unittest.TestCase):
-#     """Integration tests for GithubOrgClient.public_repos."""
-
-#     @classmethod
-#     def setUpClass(cls):
-#         """Start patching client.get_json for integration tests."""
-#         cls.get_patcher = patch("client.get_json")
-#         cls.mock_get_json = cls.get_patcher.start()
-
-#         def get_json_side_effect(url):
-#             if url.endswith("/repos"):
-#                 return cls.repos_payload
-#             return cls.org_payload
-
-#         cls.mock_get_json.side_effect = get_json_side_effect
-
-#     @classmethod
-#     def tearDownClass(cls):
-#         """Stop patching."""
-#         cls.get_patcher.stop()
-
-#     def test_public_repos(self):
-#         """Integration test for public_repos returns expected repo names."""
-#         client = GithubOrgClient("test")
-#         self.assertEqual(
-#             sorted(client.public_repos()),
-#             sorted(self.expected_repos)
-#         )
-
-#     def test_public_repos_with_license(self):
-#         """Integration test for filtering by license."""
-#         client = GithubOrgClient("test")
-#         self.assertEqual(
-#             sorted(client.public_repos("apache-2.0")),
-#             sorted(self.apache2_repos)
-#         )
 
 if __name__ == "__main__":
     unittest.main()
