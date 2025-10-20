@@ -64,11 +64,9 @@ class TestGithubOrgClient(unittest.TestCase):
             result = client.public_repos()
             expected = ["repo1", "repo2", "repo3"]
 
-
             self.assertEqual(sorted(result), expected)
             mock_url.assert_called_once()
             mock_get_json.assert_called_once_with(mock_url.return_value)
-
     # @parameterized.expand([
     #     ({"license": {"key": "my_license"}}, "my_license", True),
     #     ({"license": {"key": "other_license"}}, "my_license", False),
@@ -78,7 +76,6 @@ class TestGithubOrgClient(unittest.TestCase):
 #         self.assertEqual(
 #             GithubOrgClient.has_license(repo, license_key), expected
 #         )
-
 
 # @parameterized_class(
 #     ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
@@ -120,7 +117,6 @@ class TestGithubOrgClient(unittest.TestCase):
 #             sorted(client.public_repos("apache-2.0")),
 #             sorted(self.apache2_repos)
 #         )
-
 
 if __name__ == "__main__":
     unittest.main()
