@@ -80,20 +80,25 @@ class TestGithubOrgClient(unittest.TestCase):
 
 @parameterized_class(
         ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
-        [(org_payload, repos_payload, expected_repos, apache2_repos)])
+        [(org_payload, repos_payload, expected_repos, apache2_repos)],
+)
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos."""
 
     @classmethod
     def setUpClass(cls):
         """Start patching client.get_json for integration tests."""
-        cls.get_patcher = patch("client.get_json")
-        cls.mock_get_json = cls.get_patcher.start()
+        cls.get_patcher = patch("requests.get")
+        cls.mock_get = cls.get_patcher.start()
 
-        def get_json_side_effect(url):
+        def get_json_side_effect(url, *args, **kwargs):
+            """Return different mocked payloads based on the requested URL."""
+            mock_response = Mock()
             if url.endswith("/repos"):
-                return cls.repos_payload
-            return cls.org_payload
+                mock_response.json.return_value = cls.repos_payload
+            else:
+                mock_response.json.return_value = cls.org_payload
+            return mock_response
 
         cls.mock_get_json.side_effect = get_json_side_effect
 
