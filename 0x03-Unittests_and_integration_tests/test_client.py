@@ -5,12 +5,12 @@ import unittest
 from parameterized import parameterized, parameterized_class
 from unittest.mock import patch, PropertyMock, Mock
 from client import GithubOrgClient
-from fixtures import (
-    org_payload,
-    repos_payload,
-    expected_repos,
-    apache2_repos
-)
+# from fixtures import (
+#     org_payload,
+#     repos_payload,
+#     expected_repos,
+#     apache2_repos
+# )
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -45,21 +45,27 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json):
         """Test that public_repos returns repo names and calls get_json."""
-        repos_payload = [
-            {"name": "repo1", "license": {"key": "mit"}},
-            {"name": "repo2", "license": {"key": "apache-2.0"}},
-            {"name": "repo3", "license": None},
+        # Mocked payload for get_json
+        test_payload = [
+            {"name": "repo1"},
+            {"name": "repo2"},
+            {"name": "repo3"},
         ]
-        mock_get_json.return_value = repos_payload
+        mock_get_json.return_value = test_payload
 
+        # Create a client
         client = GithubOrgClient("test")
+
+        # Mock _public_repos_url property to return a dummy URL
         with patch.object(
             GithubOrgClient, "_public_repos_url", new_callable=PropertyMock
         ) as mock_url:
             mock_url.return_value = "https://api.github.com/orgs/test/repos"
             result = client.public_repos()
+            expected = ["repo1", "repo2", "repo3"]
 
-            self.assertEqual(sorted(result), ["repo1", "repo2", "repo3"])
+
+            self.assertEqual(sorted(result), expected)
             mock_url.assert_called_once()
             mock_get_json.assert_called_once_with(mock_url.return_value)
 
