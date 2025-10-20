@@ -76,11 +76,11 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(
             GithubOrgClient.has_license(repo, license_key), expected
         )
-    @parameterized_class(
+
+
+@parameterized_class(
         ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
         [(org_payload, repos_payload, expected_repos, apache2_repos)])
-    
-
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos."""
 
@@ -101,21 +101,6 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
     def tearDownClass(cls):
         """Stop patching."""
         cls.get_patcher.stop()
-    # def test_public_repos(self):
-    #     """Integration test for public_repos returns expected repo names."""
-    #     client = GithubOrgClient("test")
-    #     self.assertEqual(
-    #         sorted(client.public_repos()),
-    #         sorted(self.expected_repos)
-    #     )
-
-#     def test_public_repos_with_license(self):
-#         """Integration test for filtering by license."""
-#         client = GithubOrgClient("test")
-#         self.assertEqual(
-#             sorted(client.public_repos("apache-2.0")),
-#             sorted(self.apache2_repos)
-#         )
 
 
 if __name__ == "__main__":
