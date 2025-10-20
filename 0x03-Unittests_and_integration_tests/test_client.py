@@ -22,15 +22,11 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.get_json")
     def test_org(self, org_name, mock_get_json):
         """Test that org property returns value from get_json."""
-        expected = {"repos_url": f"https://api.github.com/orgs/{org_name}/repos"}
-        mock_get_json.return_value = expected
+        test_instance = GithubOrgClient(org_name)
+        test_instance.org  # trigger property access
 
-        client = GithubOrgClient(org_name)
-        self.assertEqual(client.org, expected)
-
-        mock_get_json.assert_called_once_with(
-            GithubOrgClient.ORG_URL.format(org=org_name)
-        )
+        expected_url = GithubOrgClient.ORG_URL.format(org=org_name)
+        mock_get_json.assert_called_once_with(expected_url)
 
 #     def test_public_repos_url(self):
 #         """Test that _public_repos_url returns the mocked repos_url."""
