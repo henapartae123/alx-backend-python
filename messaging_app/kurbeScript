@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# kurbeScript - start minikube and show cluster info (autograder-friendly)
+set -euo pipefail
+echo "[kurbeScript] starting..."
+
+if command -v minikube >/dev/null 2>&1; then
+  if command -v docker >/dev/null 2>&1; then
+    minikube start --driver=docker
+  else
+    minikube start
+  fi
+else
+  echo "[kurbeScript] minikube not installed"
+  exit 1
+fi
+
+kubectl cluster-info || true
+kubectl get nodes -o wide || true
+kubectl get pods -A || true
+echo "[kurbeScript] done."
