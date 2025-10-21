@@ -1,0 +1,38 @@
+#!/bin/bash
+# Script: kubctl-0x01
+# Purpose: Scale Django app deployment, verify pods, perform load testing, and monitor resource usage.
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Configuration
+DEPLOYMENT_NAME="django-app-deployment"
+SERVICE_NAME="django-service"
+NAMESPACE="default"
+PORT=8000
+DURATION=30s
+
+echo "🔹 Scaling deployment '$DEPLOYMENT_NAME' to 3 replicas..."
+kubectl scale deployment "$DEPLOYMENT_NAME" --replicas=3 --namespace="$NAMESPACE"
+
+echo "⏳ Waiting for pods to be ready..."
+kubectl rollout status deployment/"$DEPLOYMENT_NAME" --namespace="$NAMESPACE"
+
+echo "✅ Verifying running pods..."
+kubectl get pods --namespace="$NAMESPACE" -o wide
+
+echo "🌐 Fetching service IP..."
+SERVICE_IP=$(kubectl get svc "$SERVICE_NAME" --namespace="$NAMESPACE" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+if [ -z "$SERVICE_IP" ]; then
+  echo "⚠️  No external IP found. Using ClusterIP instead..."
+  SERVICE_IP=$(kubectl get svc "$SERVICE_NAME" --namespace="$NAMESPACE" -o jsonpath='{.spec.clusterIP}')
+fi
+echo "Service available at: http://$SERVICE_IP:$PORT"
+
+echo "🚀 Performing load test using wrk for $DURATION..."
+wrk -t4 -c50 -d"$DURATION" http://"$SERVICE_IP":"$PORT"/
+
+echo "📊 Monitoring resource usage..."
+kubectl top pods --namespace="$NAMESPACE"
+
+echo "✅ Done! Deployment scaled, load test complete, and resource usage displayed."
