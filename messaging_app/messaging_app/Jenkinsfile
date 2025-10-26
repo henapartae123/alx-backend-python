@@ -1,0 +1,97 @@
+pipeline {
+    agent any
+
+    environment {
+        GITHUB_CREDS = 'github-credentials-id'
+        REPO_URL = 'https://github.com/henapartae123/alx-backend-python.git'
+        BRANCH_NAME = 'main'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                
+                git credentialsId: GITHUB_CREDS, url: REPO_URL, branch: BRANCH_NAME
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Navigate to the messaging_app directory and install dependencies
+                    sh 'cd messaging_app && python3 -m venv venv'
+                    sh 'cd messaging_app && source venv/bin/activate && pip3 install -r requirements.txt'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Run pytest and generate a test report
+                    sh 'cd messaging_app && source venv/bin/activate && pytest --maxfail=1 --disable-warnings -q --tb=short --junitxml=test-results.xml'
+                }
+            }
+        }
+
+        stage('Publish Test Results') {
+            steps {
+                // Publish the test results to Jenkins
+                junit '**/test-results.xml'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up after build (optional)
+            cleanWs()
+        }
+
+        pipeline {
+    agent any
+
+    environment {
+        GIT_CREDENTIALS_ID = 'github-creds'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Make sure to specify branch explicitly
+                git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/yourusername/messaging_app.git', branch: 'main'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    python3 -m venv venv
+                    ./venv/bin/pip install --upgrade pip
+                    ./venv/bin/pip install -r messaging_app/requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh './venv/bin/pytest messaging_app/tests --junitxml=messaging_app/report.xml'
+            }
+        }
+
+        stage('Archive Test Report') {
+            steps {
+                junit 'messaging_app/report.xml'
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
+
+    }
+}
