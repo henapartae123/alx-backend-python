@@ -2,16 +2,15 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_CREDS = 'github-credentials-id'
-        REPO_URL = 'https://github.com/henapartae123/alx-backend-python.git'
-        BRANCH_NAME = 'main'
+        DOCKER_IMAGE = "your-dockerhub-username/messaging-app:latest"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                
-                git credentialsId: GITHUB_CREDS, url: REPO_URL, branch: BRANCH_NAME
+                git branch: 'main',
+                    url: 'https://github.com/yourusername/messaging-app.git',
+                    credentialsId: 'github-creds'
             }
         }
 
