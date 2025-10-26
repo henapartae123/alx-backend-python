@@ -1,0 +1,70 @@
+name: Django CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host 127.0.0.1 --password=password" 
+          --health-interval=5s 
+          --health-timeout=5s 
+          --health-retries=3
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r messaging_app/requirements.txt  # Install dependencies from the requirements file
+
+      # Step 4: Set up MySQL database for testing
+      - name: Set up MySQL database
+        run: |
+          # Wait for MySQL to be ready
+          sleep 10 
+
+          # Create the Django database and apply migrations
+          python messaging_app/manage.py migrate  # Apply migrations
+
+      # Step 5: Run tests with pytest
+      - name: Run tests
+        run: |
+          source venv/bin/activate  # Activate the virtual environment
+          pytest messaging_app/tests --maxfail=1 --disable-warnings -q --tb=short  # Run tests with pytest
+
+      # Step 6: Upload test results to GitHub
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: messaging_app/tests/test-results.xml  # Adjust this path based on where your test reports are saved
+
+          name: Django CI
